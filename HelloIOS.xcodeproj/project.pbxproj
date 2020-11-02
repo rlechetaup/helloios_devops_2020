@@ -201,6 +201,7 @@
 			);
 			path = HelloIOSUITests;
 			sourceTree = "<group>";
+			tabWidth = 5;
 		};
 /* End PBXGroup section */
 
