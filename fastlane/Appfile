@@ -1,0 +1,10 @@
+app_identifier "br.com.livetouch.helloios"
+
+# Apple ID - match
+apple_id ENV["APPLE_ID"]
+
+# Developer Portal Team ID
+team_id ENV["TEAM_ID"]
+
+# App Store Connect Team ID
+itc_team_id ENV["ITC_TEAM_ID"]

@@ -1,0 +1,125 @@
+fastlane_version "2.28.3"
+
+default_platform :ios
+
+platform :ios do
+
+    lane :create_keys do
+      match(type: "development", force_for_new_devices: true)
+      match(type: "adhoc", force_for_new_devices: true)
+      match(type: "appstore")
+    end
+
+    lane :add_devices do
+        #fastlane run register_device udid:"1234…890" name:"My new iPhone"
+        register_devices(
+          #devices: {
+          #  "Ricardo iPad" => "539bfd07e0420c4790968b5f3c7effa08809e965"
+          #}
+          devices_file: 'fastlane/devices.txt'
+        )
+    end
+
+    desc "Download keys"
+    lane :download_keys do
+      match(type: "development", readonly: true)
+      match(type: "adhoc", readonly: true)
+      match(type: "appstore", readonly: true)
+    end
+
+    desc "Build Ad Hoc"
+    lane :buildAdHoc do
+
+        match(type: "adhoc", readonly: true)
+
+        cocoapods
+        build_app(
+            workspace: "HelloIOS.xcworkspace",
+            scheme: "HelloIOS",
+            configuration: "ReleaseAdHoc",
+            export_options: {
+                method: "ad-hoc"
+                #provisioningProfiles: {
+                #    "br.com.livetouch.helloios" => "HelloIOSAdHocProfile"
+                #}
+            }
+        )
+    end
+
+    desc "Build"
+    lane :build do
+
+        match(type: "appstore", readonly: true)
+
+        cocoapods
+        build_app(
+            workspace: "HelloIOS.xcworkspace",
+            scheme: "HelloIOS",
+            export_options: {
+                method: "app-store"
+                #provisioningProfiles: {
+                #    "br.com.livetouch.helloios" => "HelloIOSDistributionProfile"
+                #}
+            }
+        )
+    end
+
+    desc "App Center"
+    lane :app_center do
+
+       buildAdHoc
+
+       #https://github.com/microsoft/fastlane-plugin-appcenter
+       appcenter_upload(
+          api_token: "2086cedb213a1821d56f3c2a28648d2a6fbd9c37",
+          owner_name: "rlechetaup",
+          owner_type: "user",
+          app_name: "HelloIOSTeste",
+          file: lane_context[SharedValues::IPA_OUTPUT_PATH],
+          notify_testers: true,
+          destinations: "admin",
+          release_notes: "appcenter gitlab!"
+        )
+    end
+    
+    desc "Deploy to Firebase Distribution"
+    lane :firebase do
+
+        buildAdHoc
+
+        firebase_app_distribution(
+            app: "1:724510310635:ios:3bb4149093b89d0b8abeae",
+            testers: "rlecheta@gmail.com,rlechetaup@gmail.com",
+            ipa_path: lane_context[SharedValues::IPA_OUTPUT_PATH],
+            release_notes_file: "fastlane/release_notes.txt",
+            service_credentials_file: ENV["firebase_service_credentials_file"]
+        )
+    end
+
+    desc "Upload to Test Flight"
+    lane :tf do
+    
+        build
+
+        # https://docs.fastlane.tools/actions/upload_to_testflight
+        upload_to_testflight(
+            skip_waiting_for_build_processing: true,
+            # Apple ID property in the App Information section in App Store Connect
+            apple_id: ENV["APP_STORE_CONNECT_APPLE_ID"]
+        )
+    end
+    
+    desc "Increment Build Number"
+    lane :inc do
+    
+        increment_build_number({
+          build_number: latest_testflight_build_number + 1
+        })
+        build
+        commit_version_bump(
+            message: "Fastlane Build Bump",
+            force: true,
+        )
+        #push_to_git_remote
+    end
+end

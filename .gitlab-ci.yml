@@ -1,0 +1,14 @@
+#  https://gitlab.com/AngeloStavrow/gitlab-ci-for-ios-projects/-/blob/master/.gitlab-ci.yml
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - echo "Fastalane!"
+    - fastlane --version
+    - bundle install
+    - bundle exec fastlane app_center
+  tags:
+    - ios
