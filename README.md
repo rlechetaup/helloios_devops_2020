@@ -1,25 +1,38 @@
-Variáveis de ambiente.
+fastlane documentation
+================
+
+# Variáveis de ambiente.
 -------------------------
 
-# MATCH
+###MATCH
+```
 APPLE_ID=xxx
+```
 
-# Developer Portal Team ID
+### Developer Portal Team ID
+```
 TEAM_ID=xxx
+```
 
-# App Store Connect Team ID
+### App Store Connect Team ID
+```
 ITC_TEAM_ID=xxx
+```
 
-# App Store Connect
+### App Store Connect
+```
 FASTLANE_PASSWORD=xxx
+```
 
-# MATCH senha cripografia git
-MATCH_PASSWORD=xxx
-
-# Transporter
-# App Store Connect > Apps > App > Info > Apple ID.
-APP_STORE_CONNECT_APPLE_ID = xxx
-
-# MATCH GIT
+### MATCH GIT
+```
 GIT_URL=git@xxx:xxx/xxx.git
 GIT_BRANCH=xxx
+MATCH_PASSWORD=xxx
+```
+
+### Transporter: App Store Connect > Apps > App > Info > Apple ID.
+```
+APP_STORE_CONNECT_APPLE_ID = xxx
+```
+
